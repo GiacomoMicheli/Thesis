@@ -1,0 +1,5 @@
+requests==2.25.1
+botocore==1.19.43
+ask_sdk_core==1.15.0
+boto3==1.16.43
+ask_sdk_model==1.29.0
