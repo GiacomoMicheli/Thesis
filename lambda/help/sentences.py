@@ -1,7 +1,7 @@
 WELCOME_MESSAGE = "Welcome in plot me, I'm here to plot your data! Please, tell me the name of the file with your data"
 WELCOME_REPROMPT = "To begin, I need to know the name of the file you want to use"
 
-SERVER = "https://ec2-15-161-236-249.eu-south-1.compute.amazonaws.com:5000/"
+SERVER = "https://ec2-35-152-72-241.eu-south-1.compute.amazonaws.com:5000/"
 
 DATA_BEFORE_AXES = "You did not open any file yet."
 DATA_BEFORE_AXES_REPROMPT = "please, open the file with the data"
@@ -25,3 +25,9 @@ ENCODING_BEFORE_PLOT_REPROMPT = "C'mon! Let's finish the basic plot"
 
 REMOVE_NON_EXISTING_ENCODING = "You haven't encoded anything yet in {}"
 REMOVE_NON_EXISTING_ENCODING_REPROMPT = "You need to encode something before"
+
+REMOVE_ALL_ENCODINGS = "Now you are back at the basic plot."
+REMOVE_ALL_ENCODINGS_REPROMPT = "You can see the basic plot. Tell me what you want to do next"
+
+PLOT_TYPE_SPEAK = "Ok, let's do this {}. Which variable should I put on the horizontal axis?"
+PLOT_TYPE_REPROMPT = "Now I need to know the variable for the abscissa"

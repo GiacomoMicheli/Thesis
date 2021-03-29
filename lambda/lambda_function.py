@@ -70,7 +70,7 @@ class SelectDataIntentHandler(AbstractRequestHandler):
         res = requests.get(url, verify=False)
         if res.status_code == 200:
             session_attr["data"] = data
-            speak_output = res.text + ". Which variable should I put on the horizontal axis?"
+            speak_output = res.text + ". Please, tell me the type of plot you want to draw"
         elif res.status_code == 500:
             speak_output = res.text
         else:
@@ -82,6 +82,26 @@ class SelectDataIntentHandler(AbstractRequestHandler):
                 .ask(sentences.DATA_SELECTED_REPROMPT)
                 .response
         )
+
+
+class SelectPlotIntentHandler(AbstractRequestHandler):
+    """Handler to select the type of plot to do."""
+    def can_handle(self, handler_input):
+        # type: (HandlerInput) -> bool
+        return ask_utils.is_intent_name("SelectPlotIntent")(handler_input)
+    
+    def handle(self, handler_input):
+        # type: (HandlerInput) -> Response
+        session_attr = handler_input.attributes_manager.session_attributes
+        plot_type = handler_input.request_envelope.request.intent.slots["plot"].value
+        session_attr["plot_type"] = plot_type
+        
+        return (
+            handler_input.response_builder
+                .speak(sentences.PLOT_TYPE_SPEAK.format(plot_type))
+                .ask(sentences.PLOT_TYPE_REPROMPT)
+                .response
+            )
 
 
 class SelectXAxisIntentHandler(AbstractRequestHandler):
@@ -320,40 +340,8 @@ class RemoveNonExistentEncoding(AbstractRequestHandler):
             handler_input.response_builder
                 .speak(sentences.REMOVE_NON_EXISTING_ENCODING.format(slots["encoding"].value))
                 .ask(sentences.REMOVE_NON_EXISTING_ENCODING_REPROMPT)
-                .add_directive(
-                    RenderDocumentDirective(
-                        token=PLOT_TOKEN,
-                        document=utils._load_apl_document(plot_doc_path),
-                        datasources={
-                            'image_data': {
-                                'type': 'object',
-                                'properties': {
-                                    'title': 'Here the plot',
-                                    'image': image_link
-                                }
-                            }
-                        }
-                    ))
                 .response
             )
-    
-
-class HelloWorldIntentHandler(AbstractRequestHandler):
-    """Handler for Hello World Intent."""
-    def can_handle(self, handler_input):
-        # type: (HandlerInput) -> bool
-        return ask_utils.is_intent_name("HelloWorldIntent")(handler_input)
-
-    def handle(self, handler_input):
-        # type: (HandlerInput) -> Response
-        speak_output = "Hello World!"
-
-        return (
-            handler_input.response_builder
-                .speak(speak_output)
-                # .ask("add a reprompt if you want to keep the session open for the user to respond")
-                .response
-        )
 
 
 class HelpIntentHandler(AbstractRequestHandler):
@@ -460,6 +448,7 @@ sb = SkillBuilder()
 
 sb.add_request_handler(LaunchRequestHandler())
 sb.add_request_handler(SelectDataIntentHandler())
+sb.add_request_handler(SelectPlotIntentHandler())
 sb.add_request_handler(SelectXAxisIntentHandler())
 sb.add_request_handler(SelectYAxisIntentHandler())
 sb.add_request_handler(UnexpectedPathHanlder())
@@ -467,7 +456,6 @@ sb.add_request_handler(EncodeVariableIntentHandler())
 sb.add_request_handler(EncodeBeforePlotHandler())
 sb.add_request_handler(RemoveEncodingIntentHandler())
 sb.add_request_handler(RemoveNonExistentEncoding())
-sb.add_request_handler(HelloWorldIntentHandler())
 sb.add_request_handler(HelpIntentHandler())
 sb.add_request_handler(CancelOrStopIntentHandler())
 sb.add_request_handler(SessionEndedRequestHandler())

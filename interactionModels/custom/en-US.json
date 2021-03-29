@@ -16,19 +16,6 @@
           "samples": []
         },
         {
-          "name": "HelloWorldIntent",
-          "slots": [],
-          "samples": [
-            "hello",
-            "how are you",
-            "say hi world",
-            "say hi",
-            "hi",
-            "say hello world",
-            "say hello"
-          ]
-        },
-        {
           "name": "AMAZON.NavigateHomeIntent",
           "samples": []
         },
@@ -37,7 +24,7 @@
           "slots": [
             {
               "name": "data",
-              "type": "custom",
+              "type": "Cheat",
               "samples": [
                 "load the data from {data}",
                 "use the file {data}",
@@ -74,7 +61,7 @@
           "slots": [
             {
               "name": "xvar",
-              "type": "custom",
+              "type": "Cheat",
               "samples": [
                 "plot {xvar} on the horizontal axis",
                 "put {xvar} on the abscissa",
@@ -146,7 +133,7 @@
           "slots": [
             {
               "name": "yvar",
-              "type": "custom",
+              "type": "Cheat",
               "samples": [
                 "{yvar} is the variable for the y axis",
                 "plot {yvar} as dependent variable",
@@ -157,6 +144,8 @@
             }
           ],
           "samples": [
+            "put {yvar} on the ordinate",
+            "put {yvar} on the vertical axis",
             "the variable for the vertical axis is {yvar}",
             "the variable for the y axis is {yvar}",
             "the variable for the ordinate is {yvar}",
@@ -203,7 +192,7 @@
           "slots": [
             {
               "name": "var",
-              "type": "custom",
+              "type": "Cheat",
               "samples": [
                 "use {var} for the {encoding}",
                 "use {var}",
@@ -271,6 +260,33 @@
             "remove the encoding from the {encoding}",
             "remove the encoding from {encoding}",
             "Remove the encoding on {encoding}"
+          ]
+        },
+        {
+          "name": "SelectPlotIntent",
+          "slots": [
+            {
+              "name": "plot",
+              "type": "plot",
+              "samples": [
+                "make a {plot}",
+                "draw a {plot}",
+                "a {plot}",
+                "{plot}"
+              ]
+            }
+          ],
+          "samples": [
+            "i should make a {plot}",
+            "i want to do a {plot}",
+            "i want to draw a {plot}",
+            "let\u0027s draw a {plot}",
+            "let\u0027s do a {plot}",
+            "i want a {plot}",
+            "draw a {plot}",
+            "plot a {plot}",
+            "I want to make a {plot}",
+            "Let\u0027s plot a {plot}"
           ]
         }
       ],
@@ -40836,6 +40852,66 @@
             }
           ],
           "name": "encoder"
+        },
+        {
+          "values": [
+            {
+              "name": {
+                "value": "size"
+              }
+            },
+            {
+              "name": {
+                "value": "time"
+              }
+            },
+            {
+              "name": {
+                "value": "day"
+              }
+            },
+            {
+              "name": {
+                "value": "smoker"
+              }
+            },
+            {
+              "name": {
+                "value": "sex"
+              }
+            },
+            {
+              "name": {
+                "value": "total bill"
+              }
+            },
+            {
+              "name": {
+                "value": "tip"
+              }
+            },
+            {
+              "name": {
+                "value": "Tips"
+              }
+            }
+          ],
+          "name": "Cheat"
+        },
+        {
+          "values": [
+            {
+              "name": {
+                "value": "box plot"
+              }
+            },
+            {
+              "name": {
+                "value": "scatter plot"
+              }
+            }
+          ],
+          "name": "plot"
         }
       ]
     },
@@ -40848,7 +40924,7 @@
           "slots": [
             {
               "name": "data",
-              "type": "custom",
+              "type": "Cheat",
               "elicitationRequired": true,
               "confirmationRequired": false,
               "prompts": {
@@ -40864,7 +40940,7 @@
           "slots": [
             {
               "name": "xvar",
-              "type": "custom",
+              "type": "Cheat",
               "elicitationRequired": true,
               "confirmationRequired": true,
               "prompts": {
@@ -40881,7 +40957,7 @@
           "slots": [
             {
               "name": "yvar",
-              "type": "custom",
+              "type": "Cheat",
               "elicitationRequired": true,
               "confirmationRequired": true,
               "prompts": {
@@ -40898,7 +40974,7 @@
           "slots": [
             {
               "name": "var",
-              "type": "custom",
+              "type": "Cheat",
               "elicitationRequired": true,
               "confirmationRequired": true,
               "prompts": {
@@ -40913,6 +40989,22 @@
               "confirmationRequired": false,
               "prompts": {
                 "elicitation": "Elicit.Slot.1147456753085.66039458632"
+              }
+            }
+          ]
+        },
+        {
+          "name": "SelectPlotIntent",
+          "confirmationRequired": false,
+          "prompts": {},
+          "slots": [
+            {
+              "name": "plot",
+              "type": "plot",
+              "elicitationRequired": true,
+              "confirmationRequired": false,
+              "prompts": {
+                "elicitation": "Elicit.Slot.52507968369.1575931883445"
               }
             }
           ]
@@ -41032,8 +41124,21 @@
             "value": "how should i encode the variable?"
           }
         ]
+      },
+      {
+        "id": "Elicit.Slot.52507968369.1575931883445",
+        "variations": [
+          {
+            "type": "PlainText",
+            "value": "you must tell me the type of plot i have to draw"
+          },
+          {
+            "type": "PlainText",
+            "value": "which type of plot do you want to do?"
+          }
+        ]
       }
     ]
   },
-  "version": "23"
+  "version": "28"
 }
