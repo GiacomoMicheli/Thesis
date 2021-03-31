@@ -24,7 +24,7 @@
           "slots": [
             {
               "name": "data",
-              "type": "Cheat",
+              "type": "dataset",
               "samples": [
                 "load the data from {data}",
                 "use the file {data}",
@@ -61,7 +61,7 @@
           "slots": [
             {
               "name": "xvar",
-              "type": "Cheat",
+              "type": "variables",
               "samples": [
                 "plot {xvar} on the horizontal axis",
                 "put {xvar} on the abscissa",
@@ -72,6 +72,12 @@
             }
           ],
           "samples": [
+            "let\u0027s use a different variable for the horizontal axis",
+            "let\u0027s use a different variable for the abscissa",
+            "let me change the variable on the horizontal axis",
+            "let me change the variable on the abscissa",
+            "let\u0027s change the variable on the horizontal axis",
+            "let\u0027s change the variable on the abscissa",
             "plot {xvar} on the x",
             "put {xvar} on the x",
             "use {xvar} for the x",
@@ -133,7 +139,7 @@
           "slots": [
             {
               "name": "yvar",
-              "type": "Cheat",
+              "type": "variables",
               "samples": [
                 "{yvar} is the variable for the y axis",
                 "plot {yvar} as dependent variable",
@@ -144,6 +150,12 @@
             }
           ],
           "samples": [
+            "let me use a different variable on the vertical axis",
+            "let me use a different variable on the ordinate",
+            "let me modify the variable on the vertical axis",
+            "let me modify the variable on the ordinate",
+            "let\u0027s change the variable on the vertical axis",
+            "let\u0027s change the variable on the ordinte",
             "put {yvar} on the ordinate",
             "put {yvar} on the vertical axis",
             "the variable for the vertical axis is {yvar}",
@@ -192,7 +204,7 @@
           "slots": [
             {
               "name": "var",
-              "type": "Cheat",
+              "type": "variables",
               "samples": [
                 "use {var} for the {encoding}",
                 "use {var}",
@@ -244,6 +256,11 @@
             }
           ],
           "samples": [
+            "draw the variable encoded in {encoding}",
+            "delete the variable encoded in {encoding}",
+            "remove the encoding in {encoding}",
+            "delete the encoding in {encoding}",
+            "remove the variable encoded in {encoding}",
             "undo the encoding on the {encoding}",
             "undo the encoding on {encoding}",
             "draw out the variable on the {encoding}",
@@ -277,6 +294,12 @@
             }
           ],
           "samples": [
+            "now let\u0027s do a {plot}",
+            "i want to draw a {plot} now",
+            "let\u0027s draw a {plot} now",
+            "let\u0027s do a {plot} now",
+            "draw me a {plot}",
+            "do me a {plot}",
             "i should make a {plot}",
             "i want to do a {plot}",
             "i want to draw a {plot}",
@@ -40857,6 +40880,31 @@
           "values": [
             {
               "name": {
+                "value": "species"
+              }
+            },
+            {
+              "name": {
+                "value": "petal length"
+              }
+            },
+            {
+              "name": {
+                "value": "petal width"
+              }
+            },
+            {
+              "name": {
+                "value": "sepal length"
+              }
+            },
+            {
+              "name": {
+                "value": "sepal width"
+              }
+            },
+            {
+              "name": {
                 "value": "size"
               }
             },
@@ -40889,14 +40937,9 @@
               "name": {
                 "value": "tip"
               }
-            },
-            {
-              "name": {
-                "value": "Tips"
-              }
             }
           ],
-          "name": "Cheat"
+          "name": "variables"
         },
         {
           "values": [
@@ -40912,6 +40955,21 @@
             }
           ],
           "name": "plot"
+        },
+        {
+          "values": [
+            {
+              "name": {
+                "value": "iris"
+              }
+            },
+            {
+              "name": {
+                "value": "tips"
+              }
+            }
+          ],
+          "name": "dataset"
         }
       ]
     },
@@ -40924,7 +40982,7 @@
           "slots": [
             {
               "name": "data",
-              "type": "Cheat",
+              "type": "dataset",
               "elicitationRequired": true,
               "confirmationRequired": false,
               "prompts": {
@@ -40940,11 +40998,10 @@
           "slots": [
             {
               "name": "xvar",
-              "type": "Cheat",
+              "type": "variables",
               "elicitationRequired": true,
-              "confirmationRequired": true,
+              "confirmationRequired": false,
               "prompts": {
-                "confirmation": "Confirm.Slot.89646221245.193522137028",
                 "elicitation": "Elicit.Slot.306517860066.1195928475257"
               }
             }
@@ -40957,11 +41014,10 @@
           "slots": [
             {
               "name": "yvar",
-              "type": "Cheat",
+              "type": "variables",
               "elicitationRequired": true,
-              "confirmationRequired": true,
+              "confirmationRequired": false,
               "prompts": {
-                "confirmation": "Confirm.Slot.458603921311.1138612849538",
                 "elicitation": "Elicit.Slot.796945610629.152426302009"
               }
             }
@@ -40974,11 +41030,10 @@
           "slots": [
             {
               "name": "var",
-              "type": "Cheat",
+              "type": "variables",
               "elicitationRequired": true,
-              "confirmationRequired": true,
+              "confirmationRequired": false,
               "prompts": {
-                "confirmation": "Confirm.Slot.1147456753085.1204332860625",
                 "elicitation": "Elicit.Slot.1147456753085.1204332860625"
               }
             },
@@ -41140,5 +41195,5 @@
       }
     ]
   },
-  "version": "28"
+  "version": "32"
 }

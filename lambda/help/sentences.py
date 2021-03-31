@@ -1,7 +1,7 @@
 WELCOME_MESSAGE = "Welcome in plot me, I'm here to plot your data! Please, tell me the name of the file with your data"
 WELCOME_REPROMPT = "To begin, I need to know the name of the file you want to use"
 
-SERVER = "https://ec2-35-152-72-241.eu-south-1.compute.amazonaws.com:5000/"
+SERVER = "https://ec2-15-161-104-205.eu-south-1.compute.amazonaws.com:5000/"
 
 DATA_BEFORE_AXES = "You did not open any file yet."
 DATA_BEFORE_AXES_REPROMPT = "please, open the file with the data"
@@ -31,3 +31,9 @@ REMOVE_ALL_ENCODINGS_REPROMPT = "You can see the basic plot. Tell me what you wa
 
 PLOT_TYPE_SPEAK = "Ok, let's do this {}. Which variable should I put on the horizontal axis?"
 PLOT_TYPE_REPROMPT = "Now I need to know the variable for the abscissa"
+
+TYPE_BEFORE_AXES = "Before select the variables for the axes you must tell me the type of plot you need"
+TYPE_BEFORE_AXES_REPROMPT = "Tell me the type of plot you need before going on"
+
+NON_VALID_ENCODING = "In this type of plot it is not possible to encode variables in the {}"
+NON_VALID_ENCODING_REPROMPT = "Try to encode somehow else"

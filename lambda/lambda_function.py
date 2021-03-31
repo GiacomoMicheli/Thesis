@@ -88,14 +88,19 @@ class SelectPlotIntentHandler(AbstractRequestHandler):
     """Handler to select the type of plot to do."""
     def can_handle(self, handler_input):
         # type: (HandlerInput) -> bool
-        return ask_utils.is_intent_name("SelectPlotIntent")(handler_input)
+        session_attr = handler_input.attributes_manager.session_attributes
+        return ((ask_utils.is_intent_name("SelectPlotIntent")(handler_input)) &
+        ("data" in session_attr))
     
     def handle(self, handler_input):
         # type: (HandlerInput) -> Response
-        session_attr = handler_input.attributes_manager.session_attributes
+        data = handler_input.attributes_manager.session_attributes["data"]
         plot_type = handler_input.request_envelope.request.intent.slots["plot"].value
+        handler_input.attributes_manager.session_attributes = {}
+        session_attr = handler_input.attributes_manager.session_attributes
         session_attr["plot_type"] = plot_type
-        
+        session_attr["data"] = data
+
         return (
             handler_input.response_builder
                 .speak(sentences.PLOT_TYPE_SPEAK.format(plot_type))
@@ -110,7 +115,8 @@ class SelectXAxisIntentHandler(AbstractRequestHandler):
         # type: (HandlerInput) -> bool
         session_attr = handler_input.attributes_manager.session_attributes
         return ((ask_utils.is_intent_name("SelectXAxisIntent")(handler_input)) &
-            ("data" in session_attr))
+            ("data" in session_attr) &
+            ("plot_type" in session_attr))
     
     def handle(self, handler_input):
         # type: (HandlerInput) -> Response
@@ -158,7 +164,8 @@ class SelectYAxisIntentHandler(AbstractRequestHandler):
         # type: (HandlerInput) -> bool
         session_attr = handler_input.attributes_manager.session_attributes
         return ((ask_utils.is_intent_name("SelectYAxisIntent")(handler_input)) & 
-            ("data" in session_attr))
+            ("data" in session_attr) &
+            ("plot_type" in session_attr))
     
     def handle(self, handler_input):
         # type: (HandlerInput) -> Response
@@ -225,6 +232,26 @@ class UnexpectedPathHanlder(AbstractRequestHandler):
         )
 
 
+class AxisBeforeTypeHandler(AbstractRequestHandler):
+    """Handler to catch a bad behavior of the user following the path.
+    In particular: The user tries to select the variables before chosing
+    the plot type"""
+    def can_handle(self, handler_input):
+        # type: (HandlerInput) -> bool
+        session_attr = handler_input.attributes_manager.session_attributes
+        return ((not(ask_utils.is_intent_name("SelectPlotIntent")(handler_input))) &
+        ("plot_type" not in session_attr))
+    
+    def handle(self, handler_input):
+        # type: (HandlerInput) -> Response
+        return (
+            handler_input.response_builder
+                .speak(sentences.TYPE_BEFORE_AXES)
+                .ask(sentences.TYPE_BEFORE_AXES_REPROMPT)
+                .response
+            )
+
+
 class EncodeVariableIntentHandler(AbstractRequestHandler):
     """Handler to encode more variables in the plot."""
     def can_handle(self, handler_input):
@@ -238,29 +265,40 @@ class EncodeVariableIntentHandler(AbstractRequestHandler):
         # type: (HandlerInput) -> Response
         session_attr = handler_input.attributes_manager.session_attributes
         slots = handler_input.request_envelope.request.intent.slots
-        session_attr[slots["encoding"].value] = slots["var"].value
-        image_link = utils.generate_url_plot(sentences.SERVER, session_attr)
+        url = sentences.SERVER + "checkEncoding/" + session_attr["plot_type"] + "/" + slots["encoding"].value + "/"
+        res = requests.get(url, verify=False)
         
-        return (
-            handler_input.response_builder
-                .speak(sentences.ENCODING_SPEAK.format(slots["var"].value))
-                .ask(sentences.ENCODING_REPROMPT)
-                .add_directive(
-                    RenderDocumentDirective(
-                        token=PLOT_TOKEN,
-                        document=utils._load_apl_document(plot_doc_path),
-                        datasources={
-                            'image_data': {
-                                'type': 'object',
-                                'properties': {
-                                    'title': 'Here the plot',
-                                    'image': image_link
+        if res.status_code == 200: 
+            session_attr[slots["encoding"].value] = slots["var"].value
+            image_link = utils.generate_url_plot(sentences.SERVER, session_attr)
+            
+            return (
+                handler_input.response_builder
+                    .speak(sentences.ENCODING_SPEAK.format(slots["var"].value))
+                    .ask(sentences.ENCODING_REPROMPT)
+                    .add_directive(
+                        RenderDocumentDirective(
+                            token=PLOT_TOKEN,
+                            document=utils._load_apl_document(plot_doc_path),
+                            datasources={
+                                'image_data': {
+                                    'type': 'object',
+                                    'properties': {
+                                        'title': 'Here the plot',
+                                        'image': image_link
+                                    }
                                 }
                             }
-                        }
-                    ))
-                .response
-        )
+                        ))
+                    .response
+            )
+        else:
+            return (
+                handler_input.response_builder
+                    .speak(sentences.NON_VALID_ENCODING.format(slots["encoding"].value))
+                    .ask(sentences.NON_VALID_ENCODING_REPROMPT)
+                    .response
+            )
 
 
 class EncodeBeforePlotHandler(AbstractRequestHandler):
@@ -452,6 +490,7 @@ sb.add_request_handler(SelectPlotIntentHandler())
 sb.add_request_handler(SelectXAxisIntentHandler())
 sb.add_request_handler(SelectYAxisIntentHandler())
 sb.add_request_handler(UnexpectedPathHanlder())
+sb.add_request_handler(AxisBeforeTypeHandler())
 sb.add_request_handler(EncodeVariableIntentHandler())
 sb.add_request_handler(EncodeBeforePlotHandler())
 sb.add_request_handler(RemoveEncodingIntentHandler())

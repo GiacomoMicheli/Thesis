@@ -49,12 +49,3 @@ def generate_url_plot(server, session_attr):
     for key, value in session_attr.items():
         server += ( key + "=" + value + "/" )
     return server
-
-
-def eliminate_encodings(session_attr):
-    """Function to eliminate all the encodings at once."""
-    new_session_attr = {}
-    for key, value in session_attr.items():
-        if ((key == "data") | (key == "xvar") | (key == "yvar")):
-            new_session_attr[key] = value
-    return new_session_attr
