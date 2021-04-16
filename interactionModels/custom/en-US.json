@@ -24,7 +24,7 @@
           "slots": [
             {
               "name": "data",
-              "type": "dataset",
+              "type": "datasets",
               "samples": [
                 "load the data from {data}",
                 "use the file {data}",
@@ -310,6 +310,103 @@
             "plot a {plot}",
             "I want to make a {plot}",
             "Let\u0027s plot a {plot}"
+          ]
+        },
+        {
+          "name": "SelectStatIntent",
+          "slots": [
+            {
+              "name": "stat",
+              "type": "aggregateStat"
+            }
+          ],
+          "samples": [
+            "consider {stat} for the aggregate statistic for each bin",
+            "let\u0027s use {stat}",
+            "{stat} is the aggregate statisic for each bin",
+            "Use {stat} as aggregate statistic for each bin",
+            "Use {stat} as aggregate statistic"
+          ]
+        },
+        {
+          "name": "ExplorationIntent",
+          "slots": [],
+          "samples": [
+            "plot me the pair plot",
+            "let\u0027s do some exploration",
+            "let me explore the data",
+            "i want to explore the data",
+            "i want to explore the dataset",
+            "let me explore the dataset"
+          ]
+        },
+        {
+          "name": "ShowRegressionIntent",
+          "slots": [
+            {
+              "name": "order",
+              "type": "AMAZON.Ordinal"
+            }
+          ],
+          "samples": [
+            "plot also the regression line",
+            "show me the regression too",
+            "show me the regression line too",
+            "add the {order} order regression",
+            "add the regression line",
+            "add the regression",
+            "show me the {order} order regression",
+            "plot the the regression line",
+            "plot the {order} order regression",
+            "show me the regression line"
+          ]
+        },
+        {
+          "name": "KernelDensityIntent",
+          "slots": [],
+          "samples": [
+            "show me also the kernel density",
+            "plot the kernel density",
+            "add the kernel density estimation",
+            "plot the estimation of the kernel density",
+            "add the estimation of the kernel density",
+            "show the kernel density",
+            "plot also the kernel density",
+            "Add the kernal density estimation"
+          ]
+        },
+        {
+          "name": "RemoveKernelIntent",
+          "slots": [],
+          "samples": [
+            "remove kernel density from the plot",
+            "delete kernel density from the plot",
+            "draw out kernel density",
+            "delete kernel density",
+            "delete kernel density estimation",
+            "remove kernel density estimation",
+            "remove kernel density",
+            "draw out the kernel density from the graph",
+            "delete the kernel density estimation",
+            "remove the kernel density estimation from the graph",
+            "draw out the kernel density estimation from the plot",
+            "delete the kernel density from the plot",
+            "remove the kernel density estimation from the plot"
+          ]
+        },
+        {
+          "name": "RemoveRegressionIntent",
+          "slots": [],
+          "samples": [
+            "eliminate the regression line",
+            "remove the regression from the plot",
+            "delete the regression from the plot",
+            "draw the regression from the plot",
+            "draw out the regression line",
+            "delete the regression line",
+            "delete the regression",
+            "remove the regression",
+            "remove the regression line"
           ]
         }
       ],
@@ -40880,17 +40977,557 @@
           "values": [
             {
               "name": {
-                "value": "species"
+                "value": "subidr"
               }
             },
             {
               "name": {
-                "value": "petal length"
+                "value": "attnr"
               }
             },
             {
               "name": {
-                "value": "petal width"
+                "value": "num1"
+              }
+            },
+            {
+              "name": {
+                "value": "num2"
+              }
+            },
+            {
+              "name": {
+                "value": "num3"
+              }
+            },
+            {
+              "name": {
+                "value": "dataset"
+              }
+            },
+            {
+              "name": {
+                "value": "x"
+              }
+            },
+            {
+              "name": {
+                "value": "y"
+              }
+            },
+            {
+              "name": {
+                "value": "subject"
+              }
+            },
+            {
+              "name": {
+                "value": "attention"
+              }
+            },
+            {
+              "name": {
+                "value": "solutions"
+              }
+            },
+            {
+              "name": {
+                "value": "score"
+              }
+            },
+            {
+              "name": {
+                "value": "network"
+              }
+            },
+            {
+              "name": {
+                "value": "1"
+              }
+            },
+            {
+              "name": {
+                "value": "1.1"
+              }
+            },
+            {
+              "name": {
+                "value": "2"
+              }
+            },
+            {
+              "name": {
+                "value": "2.1"
+              }
+            },
+            {
+              "name": {
+                "value": "3"
+              }
+            },
+            {
+              "name": {
+                "value": "3.1"
+              }
+            },
+            {
+              "name": {
+                "value": "4"
+              }
+            },
+            {
+              "name": {
+                "value": "4.1"
+              }
+            },
+            {
+              "name": {
+                "value": "5"
+              }
+            },
+            {
+              "name": {
+                "value": "5.1"
+              }
+            },
+            {
+              "name": {
+                "value": "6"
+              }
+            },
+            {
+              "name": {
+                "value": "6.1"
+              }
+            },
+            {
+              "name": {
+                "value": "6.2"
+              }
+            },
+            {
+              "name": {
+                "value": "6.3"
+              }
+            },
+            {
+              "name": {
+                "value": "7"
+              }
+            },
+            {
+              "name": {
+                "value": "7.1"
+              }
+            },
+            {
+              "name": {
+                "value": "7.2"
+              }
+            },
+            {
+              "name": {
+                "value": "7.3"
+              }
+            },
+            {
+              "name": {
+                "value": "7.4"
+              }
+            },
+            {
+              "name": {
+                "value": "7.5"
+              }
+            },
+            {
+              "name": {
+                "value": "8"
+              }
+            },
+            {
+              "name": {
+                "value": "8.1"
+              }
+            },
+            {
+              "name": {
+                "value": "8.2"
+              }
+            },
+            {
+              "name": {
+                "value": "8.3"
+              }
+            },
+            {
+              "name": {
+                "value": "8.4"
+              }
+            },
+            {
+              "name": {
+                "value": "8.5"
+              }
+            },
+            {
+              "name": {
+                "value": "9"
+              }
+            },
+            {
+              "name": {
+                "value": "9.1"
+              }
+            },
+            {
+              "name": {
+                "value": "10"
+              }
+            },
+            {
+              "name": {
+                "value": "10.1"
+              }
+            },
+            {
+              "name": {
+                "value": "11"
+              }
+            },
+            {
+              "name": {
+                "value": "11.1"
+              }
+            },
+            {
+              "name": {
+                "value": "12"
+              }
+            },
+            {
+              "name": {
+                "value": "12.1"
+              }
+            },
+            {
+              "name": {
+                "value": "12.2"
+              }
+            },
+            {
+              "name": {
+                "value": "12.3"
+              }
+            },
+            {
+              "name": {
+                "value": "12.4"
+              }
+            },
+            {
+              "name": {
+                "value": "13"
+              }
+            },
+            {
+              "name": {
+                "value": "13.1"
+              }
+            },
+            {
+              "name": {
+                "value": "13.2"
+              }
+            },
+            {
+              "name": {
+                "value": "13.3"
+              }
+            },
+            {
+              "name": {
+                "value": "13.4"
+              }
+            },
+            {
+              "name": {
+                "value": "13.5"
+              }
+            },
+            {
+              "name": {
+                "value": "14"
+              }
+            },
+            {
+              "name": {
+                "value": "14.1"
+              }
+            },
+            {
+              "name": {
+                "value": "15"
+              }
+            },
+            {
+              "name": {
+                "value": "15.1"
+              }
+            },
+            {
+              "name": {
+                "value": "16"
+              }
+            },
+            {
+              "name": {
+                "value": "16.1"
+              }
+            },
+            {
+              "name": {
+                "value": "16.2"
+              }
+            },
+            {
+              "name": {
+                "value": "16.3"
+              }
+            },
+            {
+              "name": {
+                "value": "16.4"
+              }
+            },
+            {
+              "name": {
+                "value": "16.5"
+              }
+            },
+            {
+              "name": {
+                "value": "16.6"
+              }
+            },
+            {
+              "name": {
+                "value": "16.7"
+              }
+            },
+            {
+              "name": {
+                "value": "17"
+              }
+            },
+            {
+              "name": {
+                "value": "17.1"
+              }
+            },
+            {
+              "name": {
+                "value": "17.2"
+              }
+            },
+            {
+              "name": {
+                "value": "17.3"
+              }
+            },
+            {
+              "name": {
+                "value": "17.4"
+              }
+            },
+            {
+              "name": {
+                "value": "17.5"
+              }
+            },
+            {
+              "name": {
+                "value": "17.6"
+              }
+            },
+            {
+              "name": {
+                "value": "total"
+              }
+            },
+            {
+              "name": {
+                "value": "speeding"
+              }
+            },
+            {
+              "name": {
+                "value": "alcohol"
+              }
+            },
+            {
+              "name": {
+                "value": "not distracted"
+              }
+            },
+            {
+              "name": {
+                "value": "no previous"
+              }
+            },
+            {
+              "name": {
+                "value": "ins premium"
+              }
+            },
+            {
+              "name": {
+                "value": "ins losses"
+              }
+            },
+            {
+              "name": {
+                "value": "abbrev"
+              }
+            },
+            {
+              "name": {
+                "value": "carat"
+              }
+            },
+            {
+              "name": {
+                "value": "cut"
+              }
+            },
+            {
+              "name": {
+                "value": "color"
+              }
+            },
+            {
+              "name": {
+                "value": "clarity"
+              }
+            },
+            {
+              "name": {
+                "value": "depth"
+              }
+            },
+            {
+              "name": {
+                "value": "table"
+              }
+            },
+            {
+              "name": {
+                "value": "price"
+              }
+            },
+            {
+              "name": {
+                "value": "z"
+              }
+            },
+            {
+              "name": {
+                "value": "align"
+              }
+            },
+            {
+              "name": {
+                "value": "choice"
+              }
+            },
+            {
+              "name": {
+                "value": "time"
+              }
+            },
+            {
+              "name": {
+                "value": "coherence"
+              }
+            },
+            {
+              "name": {
+                "value": "firing rate"
+              }
+            },
+            {
+              "name": {
+                "value": "id"
+              }
+            },
+            {
+              "name": {
+                "value": "diet"
+              }
+            },
+            {
+              "name": {
+                "value": "pulse"
+              }
+            },
+            {
+              "name": {
+                "value": "kind"
+              }
+            },
+            {
+              "name": {
+                "value": "year"
+              }
+            },
+            {
+              "name": {
+                "value": "month"
+              }
+            },
+            {
+              "name": {
+                "value": "passengers"
+              }
+            },
+            {
+              "name": {
+                "value": "timepoint"
+              }
+            },
+            {
+              "name": {
+                "value": "event"
+              }
+            },
+            {
+              "name": {
+                "value": "region"
+              }
+            },
+            {
+              "name": {
+                "value": "signal"
+              }
+            },
+            {
+              "name": {
+                "value": "ROI"
+              }
+            },
+            {
+              "name": {
+                "value": "BOLD signal"
+              }
+            },
+            {
+              "name": {
+                "value": "duration"
+              }
+            },
+            {
+              "name": {
+                "value": "waiting"
               }
             },
             {
@@ -40905,27 +41542,117 @@
             },
             {
               "name": {
-                "value": "size"
+                "value": "petal length"
               }
             },
             {
               "name": {
-                "value": "time"
+                "value": "petal width"
               }
             },
             {
               "name": {
-                "value": "day"
+                "value": "species"
               }
             },
             {
               "name": {
-                "value": "smoker"
+                "value": "mpg"
+              }
+            },
+            {
+              "name": {
+                "value": "cylinders"
+              }
+            },
+            {
+              "name": {
+                "value": "displacement"
+              }
+            },
+            {
+              "name": {
+                "value": "horsepower"
+              }
+            },
+            {
+              "name": {
+                "value": "weight"
+              }
+            },
+            {
+              "name": {
+                "value": "acceleration"
+              }
+            },
+            {
+              "name": {
+                "value": "model year"
+              }
+            },
+            {
+              "name": {
+                "value": "origin"
+              }
+            },
+            {
+              "name": {
+                "value": "name"
+              }
+            },
+            {
+              "name": {
+                "value": "island"
+              }
+            },
+            {
+              "name": {
+                "value": "bill length mm"
+              }
+            },
+            {
+              "name": {
+                "value": "bill depth mm"
+              }
+            },
+            {
+              "name": {
+                "value": "flipper length mm"
+              }
+            },
+            {
+              "name": {
+                "value": "body mass g"
               }
             },
             {
               "name": {
                 "value": "sex"
+              }
+            },
+            {
+              "name": {
+                "value": "method"
+              }
+            },
+            {
+              "name": {
+                "value": "number"
+              }
+            },
+            {
+              "name": {
+                "value": "orbital period"
+              }
+            },
+            {
+              "name": {
+                "value": "mass"
+              }
+            },
+            {
+              "name": {
+                "value": "distance"
               }
             },
             {
@@ -40937,12 +41664,117 @@
               "name": {
                 "value": "tip"
               }
+            },
+            {
+              "name": {
+                "value": "smoker"
+              }
+            },
+            {
+              "name": {
+                "value": "day"
+              }
+            },
+            {
+              "name": {
+                "value": "size"
+              }
+            },
+            {
+              "name": {
+                "value": "survived"
+              }
+            },
+            {
+              "name": {
+                "value": "pclass"
+              }
+            },
+            {
+              "name": {
+                "value": "age"
+              }
+            },
+            {
+              "name": {
+                "value": "sibsp"
+              }
+            },
+            {
+              "name": {
+                "value": "parch"
+              }
+            },
+            {
+              "name": {
+                "value": "fare"
+              }
+            },
+            {
+              "name": {
+                "value": "embarked"
+              }
+            },
+            {
+              "name": {
+                "value": "class"
+              }
+            },
+            {
+              "name": {
+                "value": "who"
+              }
+            },
+            {
+              "name": {
+                "value": "adult male"
+              }
+            },
+            {
+              "name": {
+                "value": "deck"
+              }
+            },
+            {
+              "name": {
+                "value": "embark town"
+              }
+            },
+            {
+              "name": {
+                "value": "alive"
+              }
+            },
+            {
+              "name": {
+                "value": "alone"
+              }
             }
           ],
           "name": "variables"
         },
         {
           "values": [
+            {
+              "name": {
+                "value": "violin plot"
+              }
+            },
+            {
+              "name": {
+                "value": "swarm plot"
+              }
+            },
+            {
+              "name": {
+                "value": "histogram"
+              }
+            },
+            {
+              "name": {
+                "value": "bar plot"
+              }
+            },
             {
               "name": {
                 "value": "box plot"
@@ -40960,6 +41792,86 @@
           "values": [
             {
               "name": {
+                "value": "titanic"
+              }
+            },
+            {
+              "name": {
+                "value": "planets"
+              }
+            },
+            {
+              "name": {
+                "value": "mpg"
+              }
+            },
+            {
+              "name": {
+                "value": "geyser"
+              }
+            },
+            {
+              "name": {
+                "value": "gammas"
+              }
+            },
+            {
+              "name": {
+                "value": "fmri"
+              }
+            },
+            {
+              "name": {
+                "value": "flights"
+              }
+            },
+            {
+              "name": {
+                "value": "exercise"
+              }
+            },
+            {
+              "name": {
+                "value": "dots"
+              }
+            },
+            {
+              "name": {
+                "value": "diamonds"
+              }
+            },
+            {
+              "name": {
+                "value": "car crashes"
+              }
+            },
+            {
+              "name": {
+                "value": "brain networks"
+              }
+            },
+            {
+              "name": {
+                "value": "attention"
+              }
+            },
+            {
+              "name": {
+                "value": "anscombe"
+              }
+            },
+            {
+              "name": {
+                "value": "anagrams"
+              }
+            },
+            {
+              "name": {
+                "value": "penguins"
+              }
+            },
+            {
+              "name": {
                 "value": "iris"
               }
             },
@@ -40969,7 +41881,32 @@
               }
             }
           ],
-          "name": "dataset"
+          "name": "datasets"
+        },
+        {
+          "values": [
+            {
+              "name": {
+                "value": "frequency"
+              }
+            },
+            {
+              "name": {
+                "value": "density"
+              }
+            },
+            {
+              "name": {
+                "value": "probability"
+              }
+            },
+            {
+              "name": {
+                "value": "count"
+              }
+            }
+          ],
+          "name": "aggregateStat"
         }
       ]
     },
@@ -40982,7 +41919,7 @@
           "slots": [
             {
               "name": "data",
-              "type": "dataset",
+              "type": "datasets",
               "elicitationRequired": true,
               "confirmationRequired": false,
               "prompts": {
@@ -41195,5 +42132,5 @@
       }
     ]
   },
-  "version": "32"
+  "version": "42"
 }

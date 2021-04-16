@@ -49,3 +49,11 @@ def generate_url_plot(server, session_attr):
     for key, value in session_attr.items():
         server += ( key + "=" + value + "/" )
     return server
+
+
+def generate_url_exploration(server, session_attr):
+    server += "explore/"
+    for key, value in session_attr.items():
+        if key != "plot_type":
+            server += ( key + "=" + value + "/" )
+    return server
