@@ -152,6 +152,57 @@ class ExplorationIntentHandler(AbstractRequestHandler):
         )
 
 
+class ShowDatasetsIntentHandler(AbstractRequestHandler):
+    def can_handle(self, handler_input):
+        return (ask_utils.is_intent_name("ShowDatasetsIntent")(handler_input))
+    
+    def handle(self, handler_input):
+        session_attr = handler_input.attributes_manager.session_attributes
+        if ("data" not in session_attr):
+            return (
+                handler_input.response_builder
+                    .speak("You should be already able to see the datasets")
+                    .response
+            )
+        else:
+            url = sentences.SERVER + "datasets/"
+            
+            res = requests.get(url, verify=False)
+            
+            if res.status_code == 200:
+                datasets_dict = res.json()
+                list_of_datasets = []
+                for value in datasets_dict.values():
+                    item = {}
+                    item["primaryText"] = value
+                    list_of_datasets.append(item)
+                return (
+                    handler_input.response_builder
+                        .speak("Now you can see the list of all the available datasets")
+                        .add_directive(
+                            RenderDocumentDirective(
+                                token=LIST_TOKEN,
+                                document=utils._load_apl_document(list_doc_path),
+                                datasources={
+                                    'datasets': {
+                                        'type': 'object',
+                                        'properties': {
+                                            'title': 'Available datasets',
+                                            'available_datasets': list_of_datasets
+                                        }
+                                    }
+                                }
+                            ))
+                        .response
+                )
+            else:
+                return (
+                    handler_input.response_builder
+                        .speak("I had problems contacting the server")
+                        .response
+                )
+
+
 class SelectPlotIntentHandler(AbstractRequestHandler):
     """Handler to select the type of plot to do."""
     def can_handle(self, handler_input):
@@ -218,14 +269,13 @@ class SelectXAxisIntentHandler(AbstractRequestHandler):
         session_attr = handler_input.attributes_manager.session_attributes
         xvar = handler_input.request_envelope.request.intent.slots["xvar"].value
         
-        if "yvar" in session_attr:
+        if ("yvar" in session_attr) or ("stat" in session_attr):
             session_attr["xvar"] = xvar
             image_link = utils.generate_url_plot(sentences.SERVER, session_attr)
-            
             return (
                 handler_input.response_builder
-                    .speak("Here we are. You should be able to see the plot!")
-                    .ask("Check the plot on your screen")
+                    .speak(sentences.BASIC_PLOT_SPEAK)
+                    .ask(sentences.BASIC_PLOT_REPROMPT)
                     .add_directive(
                         RenderDocumentDirective(
                             token=PLOT_TOKEN,
@@ -364,6 +414,50 @@ class SelectStatIntentHandler(AbstractRequestHandler):
             )
 
 
+class ShowVariablesIntentHandler(AbstractRequestHandler):
+    def can_handle(self, handler_input):
+        session_attr = handler_input.attributes_manager.session_attributes
+        return ((ask_utils.is_intent_name("ShowVariablesIntent")(handler_input)) and
+        ("plot_type" in session_attr))
+    
+    def handle(self, handler_input):
+        session_attr = handler_input.attributes_manager.session_attributes
+        data = session_attr["data"]
+        
+        url_var = sentences.SERVER + "variables/" + data + "/"
+        res_var = requests.get(url_var, verify=False)
+        if res_var.status_code == 200:
+            variables_dict = res_var.json()
+            list_of_vars = []
+            for value in variables_dict.values():
+                list_of_vars.append(value)
+            return (
+                handler_input.response_builder                
+                    .speak("Here all the variables for this dataset")
+                    .add_directive(
+                        RenderDocumentDirective(
+                            token=LIST_TOKEN,
+                            document=utils._load_apl_document(list_doc_path),
+                            datasources={
+                                'datasets': {
+                                    'type': 'object',
+                                    'properties': {
+                                        'title': 'Available variables',
+                                        'available_datasets': list_of_vars
+                                    }
+                                }
+                            }
+                        ))
+                    .response
+                )
+        else:
+            return (
+                handler_input.response_builder
+                    .speak("An error occured")
+                    .response
+                )
+
+
 class UnexpectedPathHanlder(AbstractRequestHandler):
     """Handler to catch a bad behavior of the user following the path.
     In particular: if the user tries to select variables for the axes before
@@ -458,6 +552,30 @@ class RemoveEncodingExploration(AbstractRequestHandler):
                             }
                         }
                     ))
+                .response
+            )
+
+
+class RemoveNonExistentEncodingExploration(AbstractRequestHandler):
+    """Handler to catch a bad behavior of the user following the path.
+    In particular: the user tries to remove an encoding which does not esits."""
+    def can_handle(self, handler_input):
+        # type: (HandlerInput) -> bool
+        session_attr = handler_input.attributes_manager.session_attributes
+        slots = handler_input.request_envelope.request.intent.slots
+        return ((ask_utils.is_intent_name("RemoveEncodingIntent")(handler_input)) and
+        (slots["encoding"].value not in session_attr) and
+        (session_attr["plot_type"] == "exploration"))
+    
+    def handle(self, handler_input):
+        # type: (HandlerInput) -> bool
+        session_attr = handler_input.attributes_manager.session_attributes
+        slots = handler_input.request_envelope.request.intent.slots
+        image_link = utils.generate_url_plot(sentences.SERVER, session_attr)
+        return (
+            handler_input.response_builder
+                .speak(sentences.REMOVE_NON_EXISTING_ENCODING.format(slots["encoding"].value))
+                .ask(sentences.REMOVE_NON_EXISTING_ENCODING_REPROMPT)
                 .response
             )
 
@@ -983,15 +1101,18 @@ sb = SkillBuilder()
 
 sb.add_request_handler(LaunchRequestHandler())
 sb.add_request_handler(SelectDataIntentHandler())
+sb.add_request_handler(ShowDatasetsIntentHandler())
 sb.add_request_handler(ExplorationIntentHandler())
 sb.add_request_handler(EncodingVariableExploration())
 sb.add_request_handler(RemoveEncodingExploration())
+sb.add_request_handler(RemoveNonExistentEncodingExploration())
 sb.add_request_handler(SelectPlotIntentHandler())
+sb.add_request_handler(UnexpectedPathHanlder())
 sb.add_request_handler(AxisBeforeTypeHandler())
 sb.add_request_handler(SelectXAxisIntentHandler())
 sb.add_request_handler(SelectYAxisIntentHandler())
 sb.add_request_handler(SelectStatIntentHandler())
-sb.add_request_handler(UnexpectedPathHanlder())
+sb.add_request_handler(ShowVariablesIntentHandler())
 sb.add_request_handler(EncodeVariableIntentHandler())
 sb.add_request_handler(ShowRegressionIntentHandler())
 sb.add_request_handler(RegressionBeforePlotHandler())

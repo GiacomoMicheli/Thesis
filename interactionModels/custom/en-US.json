@@ -408,6 +408,41 @@
             "remove the regression",
             "remove the regression line"
           ]
+        },
+        {
+          "name": "ShowDatasetsIntent",
+          "slots": [],
+          "samples": [
+            "display all the possible datsets",
+            "show the datasets",
+            "let me have a look at the datasets",
+            "put the datasets on the screen",
+            "deisplay the datasets",
+            "display the possible datasets",
+            "show the possible datasets",
+            "show me the datasets",
+            "show me the available datasets",
+            "let me see the datasets",
+            "let me see the available datasets"
+          ]
+        },
+        {
+          "name": "ShowVariablesIntent",
+          "slots": [],
+          "samples": [
+            "put on the screen the variables of the dataset",
+            "put on the screen the variables",
+            "put the variables of the dataset on the screen",
+            "let me watch the variables",
+            "i want to watch the variables of this dataset",
+            "let me see the available variables",
+            "show me the possible variables",
+            "display the possible variables",
+            "display the variables of this dataset",
+            "let me have a look at the variables of this dataset",
+            "let me see the possible datasets",
+            "show me the available variables"
+          ]
         }
       ],
       "types": [
@@ -42132,5 +42167,5 @@
       }
     ]
   },
-  "version": "42"
+  "version": "45"
 }
