@@ -13,6 +13,7 @@ from ask_sdk_core.skill_builder import SkillBuilder
 from ask_sdk_core.dispatch_components import AbstractRequestHandler
 from ask_sdk_core.dispatch_components import AbstractExceptionHandler
 from ask_sdk_core.handler_input import HandlerInput
+from ask_sdk_core.utils import get_supported_interfaces
 
 from ask_sdk_model import (Response, Intent)
 from ask_sdk_model.dialog import ElicitSlotDirective
@@ -33,11 +34,26 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
 
+class LaunchRequestHandlerWithoutScreen(AbstractRequestHandler):
+    def can_handle(self, handler_input):
+        return ((ask_utils.is_request_type("LaunchRequest")(handler_input)) and
+        (get_supported_interfaces(handler_input).alexa_presentation_apl is None))
+    
+    def handle(self, handler_input):
+        return (
+            handler_input.response_builder
+                .speak("You need a screen to launch this skill")
+                .set_should_end_session(True)
+                .response
+        )
+
+
 class LaunchRequestHandler(AbstractRequestHandler):
     """Handler for Skill Launch."""
     def can_handle(self, handler_input):
         # type: (HandlerInput) -> bool
-        return ask_utils.is_request_type("LaunchRequest")(handler_input)
+        return ((ask_utils.is_request_type("LaunchRequest")(handler_input)) and
+        (get_supported_interfaces(handler_input).alexa_presentation_apl is not None))
 
     def handle(self, handler_input):
         # type: (HandlerInput) -> Response
@@ -1099,6 +1115,7 @@ class CatchAllExceptionHandler(AbstractExceptionHandler):
 
 sb = SkillBuilder()
 
+sb.add_request_handler(LaunchRequestHandlerWithoutScreen())
 sb.add_request_handler(LaunchRequestHandler())
 sb.add_request_handler(SelectDataIntentHandler())
 sb.add_request_handler(ShowDatasetsIntentHandler())

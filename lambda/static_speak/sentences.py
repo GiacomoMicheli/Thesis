@@ -1,7 +1,7 @@
 WELCOME_MESSAGE = "Welcome in plot me, I'm here to plot your data! Please, tell me the name of the file with your data"
 WELCOME_REPROMPT = "To begin, I need to know the name of the file you want to use"
 
-SERVER = "https://ec2-15-161-103-121.eu-south-1.compute.amazonaws.com:5000/"
+SERVER = "https://ec2-15-161-237-161.eu-south-1.compute.amazonaws.com:5000/"
 
 DATA_BEFORE_AXES = "You did not open any file yet."
 DATA_BEFORE_AXES_REPROMPT = "please, open the file with the data"
