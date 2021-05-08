@@ -35,11 +35,15 @@ logger.setLevel(logging.INFO)
 
 
 class LaunchRequestHandlerWithoutScreen(AbstractRequestHandler):
+    """Handler for Skill Launch without a screen.
+    It warns the user that he can not use the Skill and close directly the session"""
     def can_handle(self, handler_input):
+        # type: (HandlerInput) -> bool
         return ((ask_utils.is_request_type("LaunchRequest")(handler_input)) and
         (get_supported_interfaces(handler_input).alexa_presentation_apl is None))
     
     def handle(self, handler_input):
+        # type: (HandlerInput) -> Response
         return (
             handler_input.response_builder
                 .speak("You need a screen to launch this skill")
@@ -49,7 +53,7 @@ class LaunchRequestHandlerWithoutScreen(AbstractRequestHandler):
 
 
 class LaunchRequestHandler(AbstractRequestHandler):
-    """Handler for Skill Launch."""
+    """Handler for Skill Launch with a screen."""
     def can_handle(self, handler_input):
         # type: (HandlerInput) -> bool
         return ((ask_utils.is_request_type("LaunchRequest")(handler_input)) and
@@ -59,11 +63,14 @@ class LaunchRequestHandler(AbstractRequestHandler):
         # type: (HandlerInput) -> Response
         speak_output = sentences.WELCOME_MESSAGE
         reprompt = sentences.WELCOME_REPROMPT
+        # generate the url to obtain the list with all datasets
         url = sentences.SERVER + "datasets/"
         
+        # make the http request to the server
         res = requests.get(url, verify=False)
         
         if res.status_code == 200:
+            # create the list of objects needed for APL
             datasets_dict = res.json()
             list_of_datasets = []
             for value in datasets_dict.values():
@@ -134,17 +141,26 @@ class SelectDataIntentHandler(AbstractRequestHandler):
 
 
 class ExplorationIntentHandler(AbstractRequestHandler):
+    """Hanlder to create a Pair Plot."""
     def can_handle(self, handler_input):
+        # type: (HandlerInput) -> bool
         session_attr = handler_input.attributes_manager.session_attributes
         return ((ask_utils.is_intent_name("ExplorationIntent")(handler_input)) and
         ("data" in session_attr))
     
     def handle(self, handler_input):
+        # type: (HandlerInput) -> Response
+        
+        # firstly it clears the session attributes keeping only the value of "data"
         data = handler_input.attributes_manager.session_attributes["data"]
         handler_input.attributes_manager.session_attributes = {}
         session_attr = handler_input.attributes_manager.session_attributes
         session_attr["data"] = data
+        
+        # it inserts "exporation" as "plot_type" in the session attributes
         session_attr["plot_type"] = "exploration"
+        
+        # it generates the link for the Pair Plot creation
         image_link = utils.generate_url_exploration(sentences.SERVER, session_attr)
         
         return (
@@ -169,10 +185,13 @@ class ExplorationIntentHandler(AbstractRequestHandler):
 
 
 class ShowDatasetsIntentHandler(AbstractRequestHandler):
+    """Handler to show the list of available datasets."""
     def can_handle(self, handler_input):
+        # type: (HandlerInput) -> bool
         return (ask_utils.is_intent_name("ShowDatasetsIntent")(handler_input))
     
     def handle(self, handler_input):
+        # type: (HandlerInput) -> Response
         session_attr = handler_input.attributes_manager.session_attributes
         if ("data" not in session_attr):
             return (
@@ -181,6 +200,7 @@ class ShowDatasetsIntentHandler(AbstractRequestHandler):
                     .response
             )
         else:
+            # same process that happens during Skill Launch
             url = sentences.SERVER + "datasets/"
             
             res = requests.get(url, verify=False)
@@ -229,6 +249,8 @@ class SelectPlotIntentHandler(AbstractRequestHandler):
     
     def handle(self, handler_input):
         # type: (HandlerInput) -> Response
+        
+        # it clears the session attributes keeping the value of "data" and adding the new "plot_type"
         data = handler_input.attributes_manager.session_attributes["data"]
         plot_type = handler_input.request_envelope.request.intent.slots["plot"].value
         handler_input.attributes_manager.session_attributes = {}
@@ -236,6 +258,8 @@ class SelectPlotIntentHandler(AbstractRequestHandler):
         session_attr["plot_type"] = plot_type
         session_attr["data"] = data
         
+        # it generates the url to obtain the list of the available variables for the dataset selected
+        # and it makes the request
         url_var = sentences.SERVER + "variables/" + data + "/"
         res_var = requests.get(url_var, verify=False)
         if res_var.status_code == 200:
@@ -286,6 +310,8 @@ class SelectXAxisIntentHandler(AbstractRequestHandler):
         xvar = handler_input.request_envelope.request.intent.slots["xvar"].value
         
         if ("yvar" in session_attr) or ("stat" in session_attr):
+            # case in which the user has already selected "yvar" (or "stat" for histograms)
+            # it generates the plot
             session_attr["xvar"] = xvar
             image_link = utils.generate_url_plot(sentences.SERVER, session_attr)
             return (
@@ -309,6 +335,7 @@ class SelectXAxisIntentHandler(AbstractRequestHandler):
                     .response
             )
         else:
+            # case in which it is still not ready to plot, "yvar" (or "stat") is missing
             session_attr["xvar"] = xvar
             if session_attr["plot_type"] != "histogram":
                 return (
@@ -341,6 +368,8 @@ class SelectYAxisIntentHandler(AbstractRequestHandler):
         yvar = handler_input.request_envelope.request.intent.slots["yvar"].value
         
         if "xvar" in session_attr:
+            # case in which the user has already selected "xvar"
+            # it generates the plot
             session_attr["yvar"] = yvar
             image_link = utils.generate_url_plot(sentences.SERVER, session_attr)
             
@@ -365,6 +394,7 @@ class SelectYAxisIntentHandler(AbstractRequestHandler):
                     .response
             )
         else:
+            # case in which it is still not ready to plot, "xvar" is missing
             session_attr["yvar"] = yvar
             
             return (
@@ -390,6 +420,7 @@ class SelectStatIntentHandler(AbstractRequestHandler):
         stat = handler_input.request_envelope.request.intent.slots["stat"].value
         
         if session_attr["plot_type"] != "histogram":
+            # warn the user if he tries to select "stat" without plotting a histogram
             return (
                 handler_input.response_builder
                     .speak("You can't add the aggregate statistic to this type of plot")
@@ -397,6 +428,7 @@ class SelectStatIntentHandler(AbstractRequestHandler):
                     .response
                 )
         elif "xvar" not in session_attr:
+            # case in which it is still not ready to plot, "xvar" is missing
             session_attr["stat"] = stat
             return (
                 handler_input.response_builder
@@ -405,6 +437,8 @@ class SelectStatIntentHandler(AbstractRequestHandler):
                     .response
                 )
         else:
+            # case in which the user has already selected "xvar"
+            # it generates the plot
             session_attr["stat"] = stat
             image_link = utils.generate_url_plot(sentences.SERVER, session_attr)
             
@@ -431,15 +465,19 @@ class SelectStatIntentHandler(AbstractRequestHandler):
 
 
 class ShowVariablesIntentHandler(AbstractRequestHandler):
+    """Handler to show the list of all the available variables."""
     def can_handle(self, handler_input):
+        # type: (HandlerInput) -> bool
         session_attr = handler_input.attributes_manager.session_attributes
         return ((ask_utils.is_intent_name("ShowVariablesIntent")(handler_input)) and
         ("plot_type" in session_attr))
     
     def handle(self, handler_input):
+        # type: (HandlerInput) -> Response
         session_attr = handler_input.attributes_manager.session_attributes
         data = session_attr["data"]
         
+        # it generate the url and make the request to the server to get the list of variables
         url_var = sentences.SERVER + "variables/" + data + "/"
         res_var = requests.get(url_var, verify=False)
         if res_var.status_code == 200:
@@ -500,7 +538,9 @@ class UnexpectedPathHanlder(AbstractRequestHandler):
 
 
 class EncodingVariableExploration(AbstractRequestHandler):
+    """Handler to encode variables with a Pair Plot."""
     def can_handle(self, handler_input):
+        # type: (HandlerInput) -> bool
         session_attr = handler_input.attributes_manager.session_attributes
         return ((ask_utils.is_intent_name("EncodeVariableIntent")(handler_input)) and
         (session_attr["plot_type"] == "exploration"))
@@ -509,12 +549,15 @@ class EncodingVariableExploration(AbstractRequestHandler):
         # type: (HandlerInput) -> Response
         session_attr = handler_input.attributes_manager.session_attributes
         slots = handler_input.request_envelope.request.intent.slots
+        # firstly it checks on the server if the variable selected exists and the encoding type is possible
         url_enc = sentences.SERVER + "checkEncoding/" + session_attr["plot_type"] + "/" + slots["encoding"].value + "/"
         url_var = sentences.SERVER + "checkVariable/" + session_attr["data"] + "/" + slots["var"].value + "/"
         res_enc = requests.get(url_enc, verify=False)
         res_var = requests.get(url_var, verify=False)
         
         if (res_enc.status_code == 200) and (res_var.status_code == 200):
+            # case in which they are both ok
+            # it generates the plot 
             session_attr[slots["encoding"].value] = slots["var"].value
             image_link = utils.generate_url_exploration(sentences.SERVER, session_attr)
             return (
@@ -536,10 +579,33 @@ class EncodingVariableExploration(AbstractRequestHandler):
                         ))
                     .response
             )
+        elif (res_enc.status_code == 500):
+            return (
+                handler_input.response_builder
+                    .speak(sentences.NON_VALID_ENCODING.format(slots["encoding"].value))
+                    .ask(sentences.NON_VALID_ENCODING_REPROMPT)
+                    .response
+            )
+        elif (res_var.status_code == 500):
+            return (
+                handler_input.response_builder
+                    .speak(sentences.INEXISTENT_VAR.format(slots["var"].value))
+                    .ask(sentences.INEXISTENT_VAR_REPROMPT)
+                    .response
+            )
+        else:
+            return (
+                handler_input.response_builder
+                    .speak("An error occured")
+                    .ask("I am sorry, but I have problems doing this part")
+                    .response
+            )
 
 
 class RemoveEncodingExploration(AbstractRequestHandler):
+    """Handler to remove an encoding from a Pair Plot."""
     def can_handle(self, handler_input):
+        # type: (HandlerInput) -> bool
         session_attr = handler_input.attributes_manager.session_attributes
         slots = handler_input.request_envelope.request.intent.slots
         return ((ask_utils.is_intent_name("RemoveEncodingIntent")(handler_input)) and
@@ -547,6 +613,7 @@ class RemoveEncodingExploration(AbstractRequestHandler):
         (session_attr["plot_type"] == "exploration"))
     
     def handle(self, handler_input):
+        # type: (HandlerInput) -> Response
         session_attr = handler_input.attributes_manager.session_attributes
         slots = handler_input.request_envelope.request.intent.slots
         del session_attr[slots["encoding"].value]
@@ -665,7 +732,10 @@ class ShowRegressionIntentHandler(AbstractRequestHandler):
 
 
 class RegressionBeforePlotHandler(AbstractRequestHandler):
+    """Handler to warn the user he can not ask for the regression line
+    before having a basic plot."""
     def can_handle(self, handler_input):
+        # type: (HandlerInput) -> bool
         session_attr = handler_input.attributes_manager.session_attributes
         return ((ask_utils.is_intent_name("ShowRegressionIntent")(handler_input)) and
         (("xvar" not in session_attr) or
@@ -673,6 +743,7 @@ class RegressionBeforePlotHandler(AbstractRequestHandler):
         ("stat" not in session_attr))))
     
     def handle(self, handler_input):
+        # type: (HandlerInput) -> Response
         return (
             handler_input.response_builder
                 .speak("Let's finish the basic plot before")
@@ -681,12 +752,16 @@ class RegressionBeforePlotHandler(AbstractRequestHandler):
 
 
 class RegressionOnWrongPlot(AbstractRequestHandler):
+    """Handler to warn the user he can not plot the regression line
+    on a plot different from a Scatter Plot."""
     def can_handle(self, handler_input):
+        # type: (HandlerInput) -> bool
         session_attr = handler_input.attributes_manager.session_attributes
         return ((ask_utils.is_intent_name("ShowRegressionIntent")(handler_input)) and
         (session_attr["plot_type"] != "scatter plot"))
     
     def handle(self, handler_input):
+        # type: (HandlerInput) -> Response
         return (
             handler_input.response_builder
                 .speak("The regression line can be shown only on a scatter plot")
@@ -695,12 +770,15 @@ class RegressionOnWrongPlot(AbstractRequestHandler):
 
 
 class RemoveRegressionIntentHandler(AbstractRequestHandler):
+    """Handler to remove the regression line."""
     def can_handle(self, handler_input):
+        # type: (HandlerInput) -> bool
         session_attr = handler_input.attributes_manager.session_attributes
         return ((ask_utils.is_intent_name("RemoveRegressionIntent")(handler_input)) and
         ("regression" in session_attr))
     
     def handle(self, handler_input):
+        # type: (HandlerInput) -> Response
         session_attr = handler_input.attributes_manager.session_attributes
         del session_attr["regression"]
         if "order" in session_attr:
@@ -728,12 +806,15 @@ class RemoveRegressionIntentHandler(AbstractRequestHandler):
 
 
 class RemoveNonExistentRegression(AbstractRequestHandler):
+    """Handler to warn the user that there is no regression line to remove"""
     def can_handle(self, handler_input):
+        # type: (HandlerInput) -> bool
         session_attr = handler_input.attributes_manager.session_attributes
         return ((ask_utils.is_intent_name("RemoveRegressionIntent")(handler_input)) and
         ("regression" not in session_attr))
     
     def handle(self, handler_input):
+        # type: (HandlerInput) -> Response
         return (
             handler_input.response_builder
                 .speak("There is no regression line to remove")
@@ -742,7 +823,9 @@ class RemoveNonExistentRegression(AbstractRequestHandler):
 
 
 class KernelDensityIntentHandler(AbstractRequestHandler):
+    """Handler to plot the kernel density estimation."""
     def can_handle(self, handler_input):
+        # type: (HandlerInput) -> bool
         session_attr = handler_input.attributes_manager.session_attributes
         return ((ask_utils.is_intent_name("KernelDensityIntent")(handler_input)) &
         ("xvar" in session_attr) and
@@ -751,6 +834,7 @@ class KernelDensityIntentHandler(AbstractRequestHandler):
         (session_attr["plot_type"] == "histogram"))
     
     def handle(self, handler_input):
+        # type: (HandlerInput) -> Response
         session_attr = handler_input.attributes_manager.session_attributes
         session_attr["kde"] = "yes"
         image_link = utils.generate_url_plot(sentences.SERVER, session_attr)
@@ -781,6 +865,7 @@ class KernelDensityBeforePlot(AbstractRequestHandler):
     In particular: the user tries to add the kernel density estimation before
     having a basic plot"""
     def can_handle(self, handler_input):
+        # type: (HandlerInput) -> bool
         session_attr = handler_input.attributes_manager.session_attributes
         return ((ask_utils.is_intent_name("KernelDensityIntent")(handler_input)) and
         (("xvar" not in session_attr) or
@@ -788,6 +873,7 @@ class KernelDensityBeforePlot(AbstractRequestHandler):
         ("stat" not in session_attr))))
     
     def handle(self, handler_input):
+        # type: (HandlerInput) -> Response
         return (
             handler_input.response_builder
                 .speak("Let's finish the basic plot before")
@@ -800,11 +886,13 @@ class KernelDensityWrongPlot(AbstractRequestHandler):
     In Particular: the user tries to plot the kernel density estimation on
     a plot different from a histogram"""
     def can_handle(self, handler_input):
+        # type: (HandlerInput) -> bool
         session_attr = handler_input.attributes_manager.session_attributes
         return ((ask_utils.is_intent_name("KernelDensityIntent")(handler_input)) and
         (session_attr["plot_type"] != "histogram"))
     
     def handle(self, handler_input):
+        # type: (HandlerInput) -> Response
         return (
             handler_input.response_builder
                 .speak("The kernel density estimation can be shown only on a histogram")
@@ -815,11 +903,13 @@ class KernelDensityWrongPlot(AbstractRequestHandler):
 class RemoveKernelIntentHandler(AbstractRequestHandler):
     """Handler to remove the kernel estimation density from the plot."""
     def can_handle(self, handler_input):
+        # type: (HandlerInput) -> bool
         session_attr = handler_input.attributes_manager.session_attributes
         return ((ask_utils.is_intent_name("RemoveKernelIntent")(handler_input)) and
         ("kde" in session_attr))
     
     def handle(self, handler_input):
+        # type: (HandlerInput) -> Response
         session_attr = handler_input.attributes_manager.session_attributes
         del session_attr["kde"]
         image_link = utils.generate_url_plot(sentences.SERVER, session_attr)
@@ -845,12 +935,15 @@ class RemoveKernelIntentHandler(AbstractRequestHandler):
 
 
 class RemoveNonExistentKernelDensity(AbstractRequestHandler):
+    """Handler to warn the user that there is no kernel density estimation to remove."""
     def can_handle(self, handler_input):
+        # type: (HandlerInput) -> bool
         session_attr = handler_input.attributes_manager.session_attributes
         return ((ask_utils.is_intent_name("RemoveKernelIntent")(handler_input)) and
         ("kde" not in session_attr))
     
     def handle(self, handler_input):
+        # type: (HandlerInput) -> Response
         return (
             handler_input.response_builder
                 .speak("There is no kernel density estimation to remove")
@@ -872,6 +965,7 @@ class EncodeVariableIntentHandler(AbstractRequestHandler):
         # type: (HandlerInput) -> Response
         session_attr = handler_input.attributes_manager.session_attributes
         slots = handler_input.request_envelope.request.intent.slots
+        # it check if the variable exists and if the encoding is possible
         url_enc = sentences.SERVER + "checkEncoding/" + session_attr["plot_type"] + "/" + slots["encoding"].value + "/"
         url_var = sentences.SERVER + "checkVariable/" + session_attr["data"] + "/" + slots["var"].value + "/"
         res_enc = requests.get(url_enc, verify=False)
